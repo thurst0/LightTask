@@ -26,6 +26,8 @@ ltapp
   
 - components - small reusable html components ( buttons, etc.).  
 - scripts  
+  - app.js - Schema JSON, routes, basecontroller for reused functions relating to scope.
+  - services.js - HTTP calls, and resued service functions
   - controllers - angular controllers.  
     - FormController.js - Same controller for all schema implementations.  
 - templates - Our angular html templates.  
