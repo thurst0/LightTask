@@ -8,6 +8,8 @@ The other goal of this project was to be able to bill and invoice clients using 
 
 This is a AngularJS web application, with a MySQL database, and NodeJS web hosting and express web services.  I generally gravitates towards Microsoft SQL, however I was dissapointed to learn that 'mssql' Node module doesn't support SQL 2016 at this time.  The Microsoft authored and supported module 'node-sqlserver' does, however it has some prerequisites I wanted to avoid.
 
+This project is WIP
+
 ## Default Schemas
 
 I used a custom version of this application https://github.com/thurst0/Angular-Schema-Editor to write the schema meta data
@@ -19,23 +21,32 @@ Tasks - Project has many tasks.
 Entries - Can be against a project or task.  
 
 ## File Structure
-
-components - small reusable html components ( buttons, etc.)
-scripts
-  > controllers - angular controllers
-    > FormController.js - Same controller for all schema implementations
-templates - Our angular html templates
-index.html - Our main menu, and references.
-server.js - This is our web server, and our web services for CRUD operations in MySQL
-start_server.js, start_server.cmd - This specifies the port and directory to serve from.  Can spin up multiple instances at one time.
-LT_InitDB_MySQL.sql - Create and intialize MySQL database.
-
+ltapp
+-----
+components - small reusable html components ( buttons, etc.). 
+scripts. 
+  > controllers - angular controllers. 
+    > FormController.js - Same controller for all schema implementations. 
+templates - Our angular html templates. 
+index.html - Our main menu, and references. 
+server.js - This is our web server, and our web services for CRUD operations in MySQL. 
+start_server.js, start_server.cmd - This specifies the port and directory to serve from.  Can spin up multiple instances at one time. 
+LT_InitDB_MySQL.sql - Create and intialize MySQL database. 
+node_modules
+------------
+i've included all node modules used
 ## TODOs
 
-Convert to MicrsoftSQL possibly.  Lack of T-SQL features like INSTEAD OF triggers is a setback.
-Status schema.  Can be different per project.  Also different status for project or task.
-Fix date conrols
-Invoice schema - Printing from app.
+Convert to MicrsoftSQL possibly.  Lack of T-SQL features like INSTEAD OF triggers is a setback. 
+Status schema.  Can be different per project.  Also different status for project or task. 
+Fix date conrols. 
+Invoice schema - Printing from app. 
+Remove unneeded node modules. 
 
 Client Reference
 ---------------------
+On opening screen we load all data for that entity. 
+'Load' will filter loaded data on from controls. 
+'Create' will create row using form controls.
+Editable fields can be modified directly in the grid.
+Link button will pull a list of linked entities and filter the data in the linked screen. 
