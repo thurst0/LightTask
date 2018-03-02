@@ -21,32 +21,33 @@ Tasks - Project has many tasks.
 Entries - Can be against a project or task.  
 
 ## File Structure
-ltapp
------
-components - small reusable html components ( buttons, etc.). 
-scripts. 
-  > controllers - angular controllers. 
-    > FormController.js - Same controller for all schema implementations. 
-templates - Our angular html templates. 
-index.html - Our main menu, and references. 
-server.js - This is our web server, and our web services for CRUD operations in MySQL. 
-start_server.js, start_server.cmd - This specifies the port and directory to serve from.  Can spin up multiple instances at one time. 
+
+ltapp  
+  
+components - small reusable html components ( buttons, etc.).  
+scripts  
+-controllers - angular controllers.  
+-FormController.js - Same controller for all schema implementations.  
+templates - Our angular html templates.  
+index.html - Our main menu, and references.  
+server.js - This is our web server, and our web services for CRUD operations in MySQL.  
+start_server.js, start_server.cmd - This specifies the port and directory to serve from.  Can spin up multiple instances at one time.  
 LT_InitDB_MySQL.sql - Create and intialize MySQL database. 
-node_modules
-------------
-i've included all node modules used
+
+node_modules - i've included all node modules used 
+
 ## TODOs
 
-Convert to MicrsoftSQL possibly.  Lack of T-SQL features like INSTEAD OF triggers is a setback. 
-Status schema.  Can be different per project.  Also different status for project or task. 
-Fix date conrols. 
-Invoice schema - Printing from app. 
-Remove unneeded node modules. 
+Convert to MicrsoftSQL possibly.  Lack of T-SQL features like INSTEAD OF triggers is a setback.  
+Status schema.  Can be different per project.  Also different status for project or task.  
+Fix date conrols.  
+Invoice schema - Printing from app.  
+Remove unneeded node modules.  
 
 Client Reference
 ---------------------
-On opening screen we load all data for that entity. 
-'Load' will filter loaded data on from controls. 
-'Create' will create row using form controls.
-Editable fields can be modified directly in the grid.
-Link button will pull a list of linked entities and filter the data in the linked screen. 
+On opening screen we load all data for that entity.  
+'Load' will filter loaded data on from controls.  
+'Create' will create row using form controls. 
+Editable fields can be modified directly in the grid.  
+Link button will pull a list of linked entities and filter the data in the linked screen.  
