@@ -1,0 +1,2 @@
+either fix this https://www.npmjs.com/package/msnodesql
+or use this but needs sql 2012

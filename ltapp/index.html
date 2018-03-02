@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link data-require="bootstrap-css@3.*" data-semver="3.3.7" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css" />
+  <script data-require="angularjs@1.6.*" data-semver="1.6.4" src="https://code.angularjs.org/1.6.4/angular.min.js"></script>
+  <script data-require="angular-animate@1.6.*" data-semver="1.6.4" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.4/angular-animate.min.js"></script>
+  <script data-require="angular-touch@1.6.*" data-semver="1.6.2" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.2/angular-touch.js"></script>
+  <script data-require="angular-route@1.6.*" data-semver="1.6.2" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.2/angular-route.js"></script>
+  <script data-require="angular-cookies@1.6.*" data-semver="1.6.2" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.2/angular-cookies.js"></script>
+
+  <script data-require="ui-bootstrap@*" data-semver="2.5.0" src="https://cdn.rawgit.com/angular-ui/bootstrap/gh-pages/ui-bootstrap-tpls-2.5.0.js"></script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-grid/4.0.2/ui-grid.css"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <script src="scripts/app.js"></script>
+  <script src="scripts/services.js"></script>
+  <script src="scripts/controllers/FormController.js"></script>
+  <script src="scripts/controllers/LookupController.js"></script>
+  <script src="scripts/controllers/EntryController.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-grid/4.0.2/ui-grid.js"></script>
+</head>
+<body ng-app="app">
+  <div class="container-fluid">
+    <div class="row" ng-controller="BaseController">
+		<!-- ALERTS -->
+		<div uib-alert ng-repeat="alert in alerts" ng-class="'alert-' + (alert.type || 'warning')" close="closeAlert($index)" dismiss-on-timeout="4000">{{alert.msg}}</div>
+		<!-- MENU -->
+		<button id="btnAgents" class="btn btn-block btn-success" type="submit" ng-click="openForm('agent')" ng-disabled="false">AGENTS</button>
+		<button id="btnClients" class="btn btn-block btn-success" type="submit" ng-click="openForm('client')" ng-disabled="false">CLIENTS</button>
+		<button id="btnProjects" class="btn btn-block btn-success" type="submit" ng-click="openForm('project')" ng-disabled="false">PROJECTS</button>
+		<button id="btnTasks" class="btn btn-block btn-success" type="submit" ng-click="openForm('task')" ng-disabled="false">TASKS</button>
+		<button id="btnEntry" class="btn btn-block btn-success" type="submit" ng-click="openForm('entry')" ng-disabled="false">ENTRIES</button>
+    </div>
+  </div>
+</body>
+
+</html>
