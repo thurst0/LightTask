@@ -42,7 +42,8 @@ Convert to MicrsoftSQL possibly.  Lack of T-SQL features like INSTEAD OF trigger
 Status schema.  Can be different per project.  Also different status for project or task.  
 Fix date conrols.  
 Invoice schema - Printing from app.  
-Remove unneeded node modules.  
+Remove uneeded node modules. 
+Database triggers for referential interegrity.  I.E - Can't delete a project with tasks, a task with entries, etc.
 
 Client Reference
 ---------------------
