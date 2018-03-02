@@ -43,7 +43,10 @@ Status schema.  Can be different per project.  Also different status for project
 Fix date conrols.  
 Invoice schema - Printing from app.  
 Remove uneeded node modules. 
-Database triggers for referential interegrity.  I.E - Can't delete a project with tasks, a task with entries, etc.
+Database triggers for referential interegrity.  I.E - Can't delete a project with tasks, a task with entries, etc. 
+Assigning periods or "milestones" to tasks.  
+Hour estimates on task, and progress bar.  vTask for read & tTask for write.
+Clean up entity tables.  
 
 Client Reference
 ---------------------
