@@ -24,15 +24,15 @@ Entries - Can be against a project or task.
 
 ltapp  
   
-components - small reusable html components ( buttons, etc.).  
-scripts  
--controllers - angular controllers.  
--FormController.js - Same controller for all schema implementations.  
-templates - Our angular html templates.  
-index.html - Our main menu, and references.  
-server.js - This is our web server, and our web services for CRUD operations in MySQL.  
-start_server.js, start_server.cmd - This specifies the port and directory to serve from.  Can spin up multiple instances at one time.  
-LT_InitDB_MySQL.sql - Create and intialize MySQL database. 
+- components - small reusable html components ( buttons, etc.).  
+- scripts  
+  - controllers - angular controllers.  
+    - FormController.js - Same controller for all schema implementations.  
+- templates - Our angular html templates.  
+- index.html - Our main menu, and references.  
+- server.js - This is our web server, and our web services for CRUD operations in MySQL.  
+- start_server.js, start_server.cmd - This specifies the port and directory to serve from.  Can spin up multiple instances at one time. 
+- LT_InitDB_MySQL.sql - Create and intialize MySQL database. 
 
 node_modules - i've included all node modules used 
 
