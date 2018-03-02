@@ -47,6 +47,7 @@ Database triggers for referential interegrity.  I.E - Can't delete a project wit
 Assigning periods or "milestones" to tasks.  
 Hour estimates on task, and progress bar.  vTask for read & tTask for write.
 Clean up entity tables.  
+Long text type for descriptions, and notes.  Update UI for bigger fields.
 
 Client Reference
 ---------------------
