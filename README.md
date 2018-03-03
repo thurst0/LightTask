@@ -50,6 +50,7 @@ Assigning periods or "milestones" to tasks.
 Hour estimates on task, and progress bar.  vTask for read & tTask for write.
 Clean up entity tables.  
 Long text type for descriptions, and notes.  Update UI for bigger fields.
+Schema - Projects and tasks should have multi part PK.
 
 Client Reference
 ---------------------
