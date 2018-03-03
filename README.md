@@ -40,6 +40,7 @@ node_modules - i've included all node modules used
 
 ## TODOs
 
+Convert to Angular 2
 Convert to MicrsoftSQL possibly.  Lack of T-SQL features like INSTEAD OF triggers is a setback.  
 Status schema.  Can be different per project.  Also different status for project or task.  
 Fix date conrols.  
