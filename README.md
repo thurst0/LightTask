@@ -43,15 +43,11 @@ node_modules - i've included all node modules used
 Convert to Angular 2
 Convert to MicrsoftSQL possibly.  Lack of T-SQL features like INSTEAD OF triggers is a setback.  
 Status schema.  Can be different per project.  Also different status for project or task.  
-Fix date conrols.  
 Invoice schema - Printing from app.  
 Remove uneeded node modules. 
-Database triggers for referential interegrity.  I.E - Can't delete a project with tasks, a task with entries, etc. 
 Assigning periods or "milestones" to tasks.  
 Hour estimates on task, and progress bar.  vTask for read & tTask for write.
 Clean up entity tables.  
-Long text type for descriptions, and notes.  Update UI for bigger fields.
-Schema - Projects and tasks should have multi part PK.
 
 Client Reference
 ---------------------
