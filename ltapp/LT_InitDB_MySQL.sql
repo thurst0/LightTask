@@ -9,10 +9,9 @@ CREATE TABLE tProduct (
 	, Name varchar(100) NOT NULL
 );
 
-
 CREATE TABLE tClient (
 	ID varchar(10) NOT NULL PRIMARY KEY
-	, Name varchar(100) NOT NULL 
+	, Name varchar(100)
 	, AddrLine1 varchar(255)
 	, AddrLine2 varchar(255)
 	, City varchar (100)
@@ -22,19 +21,21 @@ CREATE TABLE tClient (
 );
 
 CREATE TABLE tProject (
-	ID varchar(10) NOT NULL PRIMARY KEY
-	, Name varchar(100) NOT NULL
+	ID varchar(30) NOT NULL
+	, Name varchar(100)
 	, ClientID varchar(30) NOT NULL
+	, PRIMARY KEY (ID, ClientID)
 );
 
 CREATE TABLE tTask (
-	ID varchar(10) NOT NULL PRIMARY KEY
-	, Name varchar(100) NOT NULL
+	ID varchar(30) NOT NULL
+	, Name varchar(100)
 	, Description varchar(1000)
 	, ProjectID varchar(30) NOT NULL
 	, EstHours decimal (5,2)
 	, ProductID varchar(30)
 	, AgentID varchar(10)
+	, PRIMARY KEY (ID, ProjectID)
 );
 
 CREATE TABLE tAgent (
@@ -46,15 +47,17 @@ CREATE TABLE tAgent (
 	, Country varchar (30)
 	, State varchar (30)
 	, Postal varchar(12)
+    , Active tinyint DEFAULT 1
 );
-
 CREATE TABLE tEntry (
-	OwnerID varchar(30) NOT NULL
+	PK int PRIMARY KEY AUTO_INCREMENT
+	, AgentID varchar(10) NOT NULL
+	, OwnerID varchar(30) NOT NULL
 	, EntityID varchar(30) NOT NULL
-	, ActualHours decimal (5, 2) NOT NULL
-	, BillableHours decimal (5, 2) NOT NULL
+	, ActualHours decimal (5, 2)
+	, BillableHours decimal (5, 2)
 	, Notes varchar(1000)
-	, EntryDate datetime
+	, EntryDate datetime NOT NULL
 	, InvoiceID varchar(30)
 );
 
@@ -95,11 +98,17 @@ INSERT INTO tEntityType (ID, Name) SELECT 'tProduct', 'Product';
 
 INSERT INTO tEntityType (ID, Name) SELECT 'tEntry', 'Entry';
 
+INSERT INTO tEntityType (ID, Name) SELECT 'tClient', 'Client';
+
 INSERT INTO tEntityLink (EntityID, ToEntityID, Parms, Name) SELECT  'tTask', 'project', '{"ProjectID":"ID"}', 'Project(s)';
 
 INSERT INTO tEntityLink (EntityID, ToEntityID, Parms, Name) SELECT  'tProject', 'client', '{"ClientID":"ID"}', 'Client(s)';
 
 INSERT INTO tEntityLink (EntityID, ToEntityID, Parms, Name) SELECT  'tTask', 'entry', '{"ID":"OwnerID","Task":"EntityID"}', 'Entry';
+
+INSERT INTO tEntityLink (EntityID, ToEntityID, Parms, Name) SELECT  'tClient', 'project', '{"ID":"ClientID"}', 'Project(s)';
+
+INSERT INTO tEntityLink (EntityID, ToEntityID, Parms, Name) SELECT  'tProject', 'task', '{"ID":"ProjectID"}', 'Task(s)';
 
 CREATE VIEW vProject 
 AS 
@@ -118,5 +127,59 @@ AS
 SELECT ID, 'Project' AS Type FROM tProject
 UNION
 SELECT ID, 'Task' AS Type FROM tTask;
- 
     
+delimiter //
+CREATE TRIGGER tr_tAgent_DEL
+BEFORE DELETE
+ON tAgent
+FOR EACH ROW
+BEGIN
+	DECLARE msg varchar(128);
+    SET msg = 'Agent has entries';
+	IF (SELECT 1=1 FROM tEntry e WHERE e.AgentID = OLD.ID) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+	END IF;
+END;
+
+delimiter //
+CREATE TRIGGER tr_tTask_DEL
+BEFORE DELETE
+ON tTask
+FOR EACH ROW
+BEGIN
+	DECLARE msg varchar(128);
+    SET msg = 'Task has entries';
+	IF (SELECT 1=1 FROM tEntry e WHERE e.OwnerID = OLD.ID AND e.EntityID = 'Task') THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+END;
+
+delimiter //
+CREATE TRIGGER tr_tProject_DEL
+BEFORE DELETE
+ON tProject
+FOR EACH ROW
+BEGIN
+	DECLARE msg varchar(128);
+    SET msg = 'Project has entries';
+	IF (SELECT 1=1 FROM tEntry e WHERE e.OwnerID = OLD.ID AND e.EntityID = 'Project') THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+    SET msg = 'Project has tasks';
+    IF (SELECT 1=1 FROM tTask e WHERE e.ProjectID = OLD.ID) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+END;
+
+delimiter //
+CREATE TRIGGER tr_tClient_DEL
+BEFORE DELETE
+ON tClient
+FOR EACH ROW
+BEGIN
+	DECLARE msg varchar(128);
+    SET msg = 'Client has projects';
+	IF (SELECT 1=1 FROM tProject e WHERE e.ClientID = OLD.ID) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+	END IF;
+END;

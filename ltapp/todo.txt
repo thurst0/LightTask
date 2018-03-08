@@ -1,2 +1,3 @@
-either fix this https://www.npmjs.com/package/msnodesql
-or use this but needs sql 2012
+Dates
+Invoice Reports - Define parms, or pull from jrxml to build form.
+	Reporting tables - define location.  Node call cmd

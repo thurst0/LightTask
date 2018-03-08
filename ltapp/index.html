@@ -17,11 +17,30 @@
   <script src="scripts/controllers/FormController.js"></script>
   <script src="scripts/controllers/LookupController.js"></script>
   <script src="scripts/controllers/EntryController.js"></script>
+  <script src="scripts/controllers/LoginController.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-grid/4.0.2/ui-grid.js"></script>
 </head>
 <body ng-app="app">
   <div class="container-fluid">
     <div class="row" ng-controller="BaseController">
+		<!-- NAVBAR -->
+		<nav class="navbar navbar-inverse">
+			<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a href="#/home"><img class="navbar-brand" src="assets/lt.png" alt="LightTask"></a>
+			</div>
+			<div class="container-fluid">
+				<ul class="nav navbar-nav navbar-right navbar-brand">
+					<li ng-if="user" ng-click="openForm('login')">{{user}}</a></li>
+					<li ng-if="!user" ng-click="openForm('login')">Login</a></li>
+				</ul>
+			</div>
+		</nav>
 		<!-- ALERTS -->
 		<div uib-alert ng-repeat="alert in alerts" ng-class="'alert-' + (alert.type || 'warning')" close="closeAlert($index)" dismiss-on-timeout="4000">{{alert.msg}}</div>
 		<!-- MENU -->

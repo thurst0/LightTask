@@ -25,8 +25,10 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 			if(values && values[field]){ // value ovrds
 			  $scope.schema[row].value = values[field]
 			}
-			if($scope.schema[row].type == 'date') // if date type default to today's date // TODO format
+			if($scope.schema[row].type == 'date'){ // if date type default to today's date // TODO format
 				$scope.schema[row].value = new Date()
+				$scope.schema[row].value.setHours(0,0,0,0)
+			}
 			$scope.form_data.push($scope.schema[row])
 			$scope.columns.push({ // grid cols
 				field: $scope.schema[row].field, enableSorting: true, displayName: $scope.schema[row].caption, enableCellEdit: !$scope.schema[row].read_only
@@ -36,6 +38,7 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 			if (i == len) { // finally init grid and pull in all data
 				$scope.initGrid()
 				$scope.loadData(); // TODO only load top 100
+				$scope.clearForm(); // set defaults
 			}
 		}
 	}
@@ -47,9 +50,10 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 		if(parms) 
 			url += ('/' + JSON.stringify(parms))
 		ltService.getData(url).then(function(data){
+			if(data.data)data=data.data
 			console.log(data)
-			if(data && data.error && data.success == false ){
-				$rootScope.addAlert(data.error.sqlMessage)
+			if(data && data.message && data.success == false ){
+				$rootScope.addAlert(data.message)
 			}else{
 				$scope.gridOptions.data = data
 			}
@@ -78,7 +82,14 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 			// gridApi.selection.on.rowSelectionChanged($scope, function(row) {});
 			gridApi.edit.on.afterCellEdit($scope, function(rowEntity, colDef, newValue, oldValue) {
 				if (newValue != oldValue) { 
-					ltService.updateData('/api/' + $scope.options.object + '/' + $scope.options.pk, rowEntity) // edit data TODO : Refresh just this row?
+					ltService.updateData('/api/' + $scope.options.object + '/' + $scope.options.pk, rowEntity).then(function(data){
+						if(data.data)data=data.data
+						if(data && data.message && data.success == false ){
+							$rootScope.addAlert(data.message)
+						}else{
+							$scope.loadData()
+						}
+					})
 				}
 			})
 		  }
@@ -92,7 +103,8 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 			col = $scope.form_data[input]
 			field = col.field
 			if(col.type == 'date' && col.value){
-				row[field] = ltService.formatDate(col.value, 0, 1) // TODO fix for mysql
+				//row[field] = ltService.formatDate(col.value, 0, 1) // TODO fix for mysql
+				row[field] =  encodeURIComponent(col.value.toYMD())
 			}else{
 				console.log(col.value)
 				console.log(field)
@@ -101,8 +113,13 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 			i += 1
 			if (i == len) { // push row
 				ltService.createData('/api/' + $scope.options.object, row).then(function(data){
-					$scope.clearForm()
-					$scope.loadData()
+					if(data.data)data=data.data
+					if(data && data.message && data.success == false ){
+						$rootScope.addAlert(data.message)
+					}else{
+						$scope.clearForm()
+						$scope.loadData()
+					}
 				})
 			}
 		}
@@ -111,7 +128,13 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 	// delete data
 	$scope.deleteRow = function(grid, row) {
 		ltService.deleteData('/api/' + $scope.options.object + '/' + $scope.options.pk, row.entity).then(function(data){
-			$scope.loadData()
+			if(data.data)data=data.data
+			console.log(data)
+			if(data && data.message && data.success == false ){
+				$rootScope.addAlert(data.message)
+			}else{
+				$scope.loadData();
+			}
 		})
 	}
 	
@@ -123,8 +146,9 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 			console.log(col)
 			if(col.value){
 				if(col.type == 'date'){
-					console.log(ltService.formatDate(col.value))
-					row[field] =  encodeURIComponent(ltService.formatDate(col.value, 0, 1)) // TODO format date for mysql
+					//console.log(ltService.formatDate(col.value))
+					//row[field] =  encodeURIComponent(ltService.formatDate(col.value, 0, 1)) // TODO format date for mysql
+					row[field] =  encodeURIComponent(col.value.toYMD())
 				}else{
 					row[field] = encodeURIComponent(col.value)
 				}
@@ -177,10 +201,30 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 	
 	$scope.openFormLookup = function(input){
 		var cols = ltService.splitCSV(input.lookup.cols); // cols into array
+		var sets = "", set = "", col_name = "", set_name = ""
+		if(input.lookup.sets) 
+			sets = ltService.splitCSV(input.lookup.sets); // sets into array
 		$scope.openLookup(input.lookup.object, cols).then(function(data){
-			console.log(data)
+			if(!data && !data.entity) return;
+			
 			var retval = cols[0] // first row for now
 			input.value = data.entity[retval] // set input value to first row, first col
+			if(sets){ // if we specified sets, then we need to match each column returned to each set. TODO clean this up
+				for (var col in cols) { // should be corresponding number of sets
+					col_name = cols[col] // row column returned
+					set = data.entity[col_name] // value
+					set_name = sets[col]
+					if(set){
+						for (var i in $scope.form_data) {
+							if($scope.form_data[i].field == set_name){
+								console.log($scope.form_data[i].field)
+								console.log(set)
+								$scope.form_data[i].value = set
+							}
+						}
+					}
+				}
+			}
 		})
 		
 	}

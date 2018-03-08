@@ -6,12 +6,12 @@
 	<form name="frmDemo" id="frmDemo" role="search">
 		<div class="form-group row">
 		  <div ng-repeat="input in form_data">
-			<!-- <div class="clearfix" ng-if="$index % 2 == 0"></div> -->
-			<div class='col-sm-12'>
+			<div class="clearfix" ng-if="$index % 2 == 0 && (!input.type == 'longtext' || !input.lookup)"></div>
+			<div ng-class="!input.type == 'longtext' || !input.lookup ? 'col-sm-6' : 'col-sm-12'" ng-if="input.type != 'longtext'">
 			  <label for="input">{{input.name}}</label>
 			  <div class="input-group margin-bottom wrapper">
 				<span class="input-group-addon" style="width:0px; padding-left:0px; padding-right:0px; border:none;"></span>
-				<input id="input" class="form-control margin-bottom" autocomplete='off' ng-required="input.required" ng-model="input.value" ng-disabled="input.read_only || input.lookup" placeholder="{{input.caption}}">
+				<input id="input" type="{{input.type}}" class="form-control margin-bottom" autocomplete='off' ng-required="input.required" ng-model="input.value" ng-disabled="input.read_only || input.lookup" placeholder="{{input.caption}}">
 				<span class="input-group-btn" ng-if="input.lookup">
 					  <button type="button" class="btn btn-default" ng-click="openFormLookup(input)">
 						<span class="glyphicon glyphicon-search"></span>
@@ -19,14 +19,19 @@
 				</span>
 			  </div>
 			</div>
+			<div class ="col-sm-12" rows="3" ng-if="input.type == 'longtext'">
+				<label for="input">{{input.name}}</label>
+				<div class="input-group margin-bottom wrapper">
+					<textarea autocomplete='off' ng-required="input.required" ng-model="input.value" ng-disabled="input.read_only || input.lookup" placeholder="{{input.caption}}"></textarea>
+				</div>
+			</div>
 		  </div>
 		</div>
-		<!-- ENTER : This could be a filter to load, or to add row -->
 		<button id="btnCreate" class="btn btn-success btn-block margin-top margin-bottom" type="submit" ng-click="createData()" ng-disabled="frmDemo.$invalid">CREATE</button>
-		<button id="btnLoad" class="btn btn-success btn-block margin-top margin-bottom" type="submit" ng-click="loadData()" ng-disabled="false">LOAD</button>
+		<button ng-if="options.object" id="btnLoad" class="btn btn-success btn-block margin-top margin-bottom" type="submit" ng-click="loadData()" ng-disabled="false">LOAD</button>
 	</form>
 	<!-- GRID -->
-	<div class="row">
+	<div class="row" ng-if="options.object">
 		<div id="grid1" class="fill grid" ui-grid="gridOptions" data-ng-if="!refresh" ui-grid-pagination ui-grid-selection ui-grid-edit>
 		</div>
 	</div>

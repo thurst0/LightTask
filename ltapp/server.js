@@ -50,7 +50,7 @@ module.exports = function() {
 			console.log(query)
 			connection.query(query, function (err, rows, fields) {
 				if (err){
-					res.send({ success: false, message: 'query error', error: err });
+					res.send({ success: false, message: err.sqlMessage, error: err });
 					connection.release();
 					return
 				}
@@ -75,7 +75,7 @@ module.exports = function() {
 			console.log(query)
 			connection.query(query, function (err, rows, fields) {
 				if (err){
-					res.send({ success: false, message: 'query error', error: err });
+					res.send({ success: false, message: err.sqlMessage, error: err });
 					connection.release();
 					return
 				}
@@ -93,20 +93,35 @@ module.exports = function() {
 		for (field in req.body) { // build sets csv string
 			console.log(field)
 			console.log(i)
-			sets += (i == 0) ? (field + " = '" + req.body[field] + "'") : (", " + field + " = '" + req.body[field] + "'")
+			if(req.body[field] != null)
+				sets += (i == 0) ? (field + " = '" + req.body[field] + "'") : (", " + field + " = '" + req.body[field] + "'")
 			i += 1
 		}
 		pool.getConnection(function(err, connection){
-			var query = 'UPDATE ' + object + ' SET ' + sets + ' WHERE ' + pk + ' = "' +  req.body[pk] + '"'
-			console.log(query)
-			connection.query(query, function (err, rows, fields) {
+			// ensure we are only effecting 1 row
+			connection.query('SELECT 1 FROM ' + object + ' WHERE ' + pk + ' = "' +  req.body[pk] + '"' , function (err, rows, fields) {
+				console.log(rows)
 				if (err){
-					res.send({ success: false, message: 'query error', error: err });
+					res.send({ success: false, message:err.sqlMessage, error: err });
 					connection.release();
 					return
+				}else if(rows.length != 1){
+					res.send({ success: false, message: 'Operation would effect mutliple rows'});
+					connection.release();
+					return;
+				}else{ // continue
+					var query = 'UPDATE ' + object + ' SET ' + sets + ' WHERE ' + pk + ' = "' +  req.body[pk] + '"'
+					console.log(query)
+					connection.query(query, function (err, rows, fields) {
+						if (err){
+							res.send({ success: false, message: err.sqlMessage, error: err });
+							connection.release();
+							return
+						}
+						res.send(rows)
+						connection.release();
+					})
 				}
-				res.send(rows)
-				connection.release();
 			})
 		})
 	})
@@ -123,16 +138,31 @@ module.exports = function() {
 			i += 1
 		}
 		pool.getConnection(function(err, connection){
-			var query = 'DELETE FROM ' + object + ' WHERE ' + pk + ' = "' +  req.body[pk] + '"' // TODO check row count to ensure only 1 row will be effected.  Also allow multi part PK
-			console.log(query)
-			connection.query(query, function (err, rows, fields) {
+			// ensure we are only effecting 1 row
+			connection.query('SELECT 1 FROM ' + object + ' WHERE ' + pk + ' = "' +  req.body[pk] + '"' , function (err, rows, fields) {
+				console.log(rows)
 				if (err){
-					res.send({ success: false, message: 'query error', error: err });
+					res.send({ success: false, message:err.sqlMessage, error: err });
 					connection.release();
 					return
+				}else if(rows.length != 1){
+					res.send({ success: false, message: 'Operation would effect mutliple rows'});
+					connection.release();
+					return;
+				}else{ // continue
+					var query = 'DELETE FROM ' + object + ' WHERE ' + pk + ' = "' +  req.body[pk] + '"' 
+					console.log(query)
+					connection.query(query, function (err, rows, fields) {
+						console.log(err)
+						if (err){
+							res.send({ success: false, message: err.sqlMessage, error: err });
+							connection.release();
+							return
+						}
+						res.send(rows)
+						connection.release();
+					})
 				}
-				res.send(rows)
-				connection.release();
 			})
 		})
 	})
