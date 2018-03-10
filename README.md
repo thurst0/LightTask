@@ -19,6 +19,8 @@ Clients.
 Projects - Client has many projects.  
 Tasks - Project has many tasks.  
 Entries - Can be against a project or task.  
+Git Commits - This is a very basic git integration.  Allows use to specify an Owner (in this case needs to be added as an agent), and a repo name.  Will pull a list of all comits for that repo with some details.  Ordered with most recent first.  By selecting one, it will bring you to the entry screen and default the notes for the entry to be the commit comment.  Note that web server that hosts this web application will need to be authenticated with git.
+Login - Choose an agent to login as.
 
 ## File Structure
 
@@ -47,7 +49,9 @@ Invoice schema - Printing from app.
 Remove uneeded node modules. 
 Assigning periods or "milestones" to tasks.  
 Hour estimates on task, and progress bar.  vTask for read & tTask for write.
-Clean up entity tables.  
+Clean up entity tables. 
+Password and authentication
+Git expansion - Add products.  Product can be associated with a task or project.  Product can be associated with a repo.  Then we can do a git commit lookup from the project or task and further automate the entry.
 
 Client Reference
 ---------------------
