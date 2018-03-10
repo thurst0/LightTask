@@ -110,6 +110,7 @@ ltapp.controller('BaseController', function BaseController($scope, $rootScope, $
 	$rootScope.schema.project = '[{"name":"ID","field":"ID","caption":"ID","required":1},{"name":"Name","field":"Name","caption":"Name"},{"name":"Client ID","field":"ClientID","caption":"Client ID","required":1, "lookup":{"object":"tclient","cols":"ID,Name"}}]'
 	$rootScope.schema.task = '[{"name":"ID","field":"ID","required":1},{"name":"Name","field":"Name"},{"name":"Description","field":"Description","type":"longtext"},{"name":"Project ID","field":"ProjectID","caption":"Project ID","lookup":{"object":"tproject","cols":"ID,Name"}},{"name":"Agent","field":"AgentID","caption":"Agent ID","lookup":{"object":"tagent","cols":"ID,Name"}},{"name":"Est Hours","field":"EstHours","required":0,"type":"number"}]'
 	$rootScope.schema.login = '[{"name":"Agent","field":"User","type":"cookie","lookup":{"object":"tagent","cols":"ID,Name"}}]'
+	$rootScope.schema.gitcomments = '[{"name":"Agent","field":"user","type":"cookie","required":1,"lookup":{"object":"tagent","cols":"ID,Name"}},{"name":"Repo","field":"repo","required":1}]'
 	$rootScope.options = []
 	$rootScope.options.agent = {"object":"tagent","pk":"ID","title":"Agents"}
 	$rootScope.options.entry = {"object":"tentry","title":"Entries","pk":"PK","controller":"EntryController"}
@@ -117,4 +118,5 @@ ltapp.controller('BaseController', function BaseController($scope, $rootScope, $
 	$rootScope.options.project = {"object":"tproject","pk":"ID","title":"Projects"}
 	$rootScope.options.task = {"object":"ttask","pk":"ID","title":"Tasks"}
 	$rootScope.options.login = {"object":"","title":"Login","controller":"LoginController"}
+	$rootScope.options.gitcomments = {"object":"","title":"Git Comments","controller":"GitCommentController"}
 })

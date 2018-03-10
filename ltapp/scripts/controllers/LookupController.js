@@ -5,6 +5,8 @@ ltapp.controller('LookupController', function LookupController($scope, $rootScop
 	$scope.url = url;
 	if(options && options.title)
 		$scope.title = options.title
+	if(options && options.data)
+		$scope.data = options.data
 	//----//
 	//-- GRID PROPERTIES AND FUNCTIONS --//
 	$scope.columns = [];
@@ -55,10 +57,17 @@ ltapp.controller('LookupController', function LookupController($scope, $rootScop
 		// $uibModalInstance.close(rows); // close lookup and pass back selected row detail
 	// };
 	$scope.loadData = function() {
-		ltService.getData('/api/' + url).then(function(data){
-			console.log(data)
-			$scope.gridOptions.data = data
-		})
+		if(!$scope.data){
+			if(!url.includes('http')){ // in this case we are specifying full url for integration
+				url = '/api/' + url
+			}
+			ltService.getData(url).then(function(data){
+				console.log(data)
+				$scope.gridOptions.data = data
+			})
+		}else{
+			$scope.gridOptions.data = $scope.data // in this case we are supplying data for lookup
+		}
 	}
 	$scope.loadData();
 });

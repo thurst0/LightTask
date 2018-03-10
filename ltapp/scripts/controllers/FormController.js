@@ -8,7 +8,8 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 	$scope.form_data = []; // form data
 	$scope.options = []; // options relating to form implementation
 	$scope.values = values // default specified values for ovrd
-	
+	$scope.action = "Create"
+
 	//----//
 	//-- FUNCTIONS --//
 	
@@ -19,6 +20,9 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 		$scope.title = options.title
 		if($scope.options.controller)
 			angular.extend(this, $controller($scope.options.controller, {$scope: $scope}));
+		if(!$scope.options.object){
+			$scope.action = $scope.options.title // in the case we have no object, we want to specify action button as title
+		}
 		var i = 0, len = $scope.schema.length, field = ""
 		for (var row in $scope.schema) { // loop schema to add form controls and grid cols
 			field = $scope.schema[row].field
@@ -45,6 +49,9 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 	
 	// load data 
 	$scope.loadData = function() {
+		if(!$scope.options.object){
+			return;
+		}
 		var parms = $scope.getParms(); // filter by any form criteria
 		var url = '/api/' + $scope.options.object
 		if(parms) 

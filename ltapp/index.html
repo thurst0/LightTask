@@ -17,7 +17,8 @@
   <script src="scripts/controllers/FormController.js"></script>
   <script src="scripts/controllers/LookupController.js"></script>
   <script src="scripts/controllers/EntryController.js"></script>
-  <script src="scripts/controllers/LoginController.js"></script>
+	<script src="scripts/controllers/LoginController.js"></script>
+	<script src="scripts/controllers/GitCommentController.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-grid/4.0.2/ui-grid.js"></script>
 </head>
 <body ng-app="app">
@@ -49,7 +50,9 @@
 		<button id="btnProjects" class="btn btn-block btn-success" type="submit" ng-click="openForm('project')" ng-disabled="false">PROJECTS</button>
 		<button id="btnTasks" class="btn btn-block btn-success" type="submit" ng-click="openForm('task')" ng-disabled="false">TASKS</button>
 		<button id="btnEntry" class="btn btn-block btn-success" type="submit" ng-click="openForm('entry')" ng-disabled="false">ENTRIES</button>
-    </div>
+		<button id="btnGitComments" class="btn btn-block btn-success" type="submit" ng-click="openForm('gitcomments')" ng-disabled="false">GIT COMMITS</button>
+    	
+	</div>
   </div>
 </body>
 

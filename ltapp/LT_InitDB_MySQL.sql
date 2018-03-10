@@ -110,6 +110,8 @@ INSERT INTO tEntityLink (EntityID, ToEntityID, Parms, Name) SELECT  'tClient', '
 
 INSERT INTO tEntityLink (EntityID, ToEntityID, Parms, Name) SELECT  'tProject', 'task', '{"ID":"ProjectID"}', 'Task(s)';
 
+INSERT INTO tEntityLink (EntityID, ToEntityID, Parms, Name) SELECT  'tProject', 'entry', '{"ID":"OwnerID","Project":"EntityID"}', 'Entry';
+
 CREATE VIEW vProject 
 AS 
 SELECT p.Name, p.ID, c.Name as ClientName, c.ID as ClientID
