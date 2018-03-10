@@ -3,7 +3,7 @@ ltapp.controller('EntryController', function EntryController($scope, $rootScope,
 	//angular.extend(this, $controller('BaseController', {$scope: $scope}));
 	
 	// ovrd
-	$scope.clearForm = function(){
+	$scope.setDefaults = function(){
 		var col = "", field = ""
 		for (var input in $scope.form_data) {
 			col = $scope.form_data[input]

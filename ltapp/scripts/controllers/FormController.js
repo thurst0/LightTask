@@ -42,7 +42,7 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 			if (i == len) { // finally init grid and pull in all data
 				$scope.initGrid()
 				$scope.loadData(); // TODO only load top 100
-				$scope.clearForm(); // set defaults
+				$scope.setDefaults(); // set defaults
 			}
 		}
 	}
@@ -124,7 +124,7 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 					if(data && data.message && data.success == false ){
 						$rootScope.addAlert(data.message)
 					}else{
-						$scope.clearForm()
+						$scope.clearForm() // TODO we need a radio defaulted to off whether to keep settings or defaults.
 						$scope.loadData()
 					}
 				})
@@ -175,8 +175,11 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 			field = col.field
 			col.value = ""
 		}
+		$scope.setDefaults()
 	}
-	
+	$scope.setDefaults = function(){
+
+	}
 	$scope.cancel = function() {
 		$uibModalInstance.dismiss('cancel');
 	};

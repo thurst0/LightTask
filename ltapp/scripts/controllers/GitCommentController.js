@@ -3,7 +3,7 @@ ltapp.controller('GitCommentController', function GitCommentController($scope, $
 	angular.extend(this, $controller('BaseController', {$scope: $scope}));
 
 	// ovrd
-	$scope.clearForm = function(){
+	$scope.setDefaults = function(){
 		var col = "", field = ""
 		for (var input in $scope.form_data) {
 			col = $scope.form_data[input]

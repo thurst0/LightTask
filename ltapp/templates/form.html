@@ -11,7 +11,7 @@
 			  <label for="input">{{input.name}}</label>
 			  <div class="input-group margin-bottom wrapper">
 				<span class="input-group-addon" style="width:0px; padding-left:0px; padding-right:0px; border:none;"></span>
-				<input id="input" type="{{input.type}}" class="form-control margin-bottom" autocomplete='off' ng-required="input.required" ng-model="input.value" ng-disabled="input.read_only || input.lookup" placeholder="{{input.caption}}">
+				<input id="input" type="{{input.type}}" class="form-control margin-bottom" autocomplete='off' ng-required="input.required" ng-model="input.value" ng-disabled="input.read_only" placeholder="{{input.caption}}">
 				<span class="input-group-btn" ng-if="input.lookup">
 					  <button type="button" class="btn btn-default" ng-click="openFormLookup(input)">
 						<span class="glyphicon glyphicon-search"></span>
