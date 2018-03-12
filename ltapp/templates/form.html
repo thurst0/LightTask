@@ -1,5 +1,5 @@
 <div class="modal-body" ng-init="loaddefaults()">
-	<center><h1>{{title}}</h1></center>
+<h1>{{title}}</h1>
 	<!-- ALERTS -->
 	<div uib-alert ng-repeat="alert in alerts" ng-class="'alert-' + (alert.type || 'warning')" close="closeAlert($index)" dismiss-on-timeout="4000">{{alert.msg}}</div>
 	<!-- FORM -->
@@ -27,12 +27,12 @@
 			</div>
 		  </div>
 		</div>
-		<button id="btnCreate" class="btn btn-success btn-block margin-top margin-bottom" type="submit" ng-click="createData()" ng-disabled="frmDemo.$invalid">{{action}}</button>
-		<button ng-if="options.object" id="btnLoad" class="btn btn-success btn-block margin-top margin-bottom" type="submit" ng-click="loadData()" ng-disabled="false">Load</button>
+		<button id="btnCreate" class="btn btn-success btn-block margin-top margin-bottom lt-btn-primary" type="submit" ng-click="createData()" ng-disabled="frmDemo.$invalid">{{action}}</button>
+		<button ng-if="options.object" id="btnLoad" class="btn btn-success btn-block margin-top margin-bottom lt-btn-primary" type="submit" ng-click="loadData()" ng-disabled="false">Load</button>
 	</form>
 	<!-- GRID -->
 	<div class="row" ng-if="options.object">
-		<div id="grid1" class="fill grid" ui-grid="gridOptions" data-ng-if="!refresh" ui-grid-pagination ui-grid-selection ui-grid-edit>
+		<div id="grid1" class="fill grid lt-grid" ui-grid="gridOptions" data-ng-if="!refresh" ui-grid-pagination ui-grid-selection ui-grid-edit>
 		</div>
 	</div>
 </div>

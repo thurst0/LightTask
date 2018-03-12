@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+	<title>LightTask</title>
   <link data-require="bootstrap-css@3.*" data-semver="3.3.7" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css" />
   <script data-require="angularjs@1.6.*" data-semver="1.6.4" src="https://code.angularjs.org/1.6.4/angular.min.js"></script>
   <script data-require="angular-animate@1.6.*" data-semver="1.6.4" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.4/angular-animate.min.js"></script>
@@ -45,12 +49,15 @@
 		<!-- ALERTS -->
 		<div uib-alert ng-repeat="alert in alerts" ng-class="'alert-' + (alert.type || 'warning')" close="closeAlert($index)" dismiss-on-timeout="4000">{{alert.msg}}</div>
 		<!-- MENU -->
-		<button id="btnAgents" class="btn btn-block btn-success" type="submit" ng-click="openForm('agent')" ng-disabled="false">AGENTS</button>
-		<button id="btnClients" class="btn btn-block btn-success" type="submit" ng-click="openForm('client')" ng-disabled="false">CLIENTS</button>
-		<button id="btnProjects" class="btn btn-block btn-success" type="submit" ng-click="openForm('project')" ng-disabled="false">PROJECTS</button>
-		<button id="btnTasks" class="btn btn-block btn-success" type="submit" ng-click="openForm('task')" ng-disabled="false">TASKS</button>
-		<button id="btnEntry" class="btn btn-block btn-success" type="submit" ng-click="openForm('entry')" ng-disabled="false">ENTRIES</button>
-		<button id="btnGitComments" class="btn btn-block btn-success" type="submit" ng-click="openForm('gitcomments')" ng-disabled="false">GIT COMMITS</button>
+		<button id="btnAgents" class="btn btn-block btn-success lt-btn-primary" type="submit" ng-click="openForm('agent')" ng-disabled="false">AGENTS</button>
+		<button id="btnClients" class="btn btn-block btn-success lt-btn-primary" type="submit" ng-click="openForm('client')" ng-disabled="false">CLIENTS</button>
+		<button id="btnProjects" class="btn btn-block btn-success lt-btn-primary" type="submit" ng-click="openForm('project')" ng-disabled="false">PROJECTS</button>
+		<button id="btnTasks" class="btn btn-block btn-success lt-btn-primary" type="submit" ng-click="openForm('task')" ng-disabled="false">TASKS</button>
+		<button id="btnEntry" class="btn btn-block btn-success lt-btn-primary" type="submit" ng-click="openForm('entry')" ng-disabled="false">ENTRIES</button>
+		<button id="btnPeriod" class="btn btn-block btn-success lt-btn-primary" type="submit" ng-click="openForm('period')" ng-disabled="false">PERIODS</button>
+		<button id="btnProduct" class="btn btn-block btn-success lt-btn-primary" type="submit" ng-click="openForm('product')" ng-disabled="false">PRODUCTS</button>
+		<button id="btnStatus" class="btn btn-block btn-success lt-btn-primary" type="submit" ng-click="openForm('status')" ng-disabled="false">STATUSES</button>
+		<button id="btnGitComments" class="btn btn-block btn-success lt-btn-primary" type="submit" ng-click="openForm('gitcomments')" ng-disabled="false">GIT COMMITS</button>
     	
 	</div>
   </div>

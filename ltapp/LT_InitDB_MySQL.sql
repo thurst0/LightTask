@@ -5,13 +5,17 @@ CREATE DATABASE LTApp;
 USE LTApp;
 
 CREATE TABLE tProduct (
-	ID varchar(10) NOT NULL PRIMARY KEY
-	, Name varchar(100) NOT NULL
+	ID varchar(30) NOT NULL PRIMARY KEY
+	, Name varchar(100)
+	, Repo varchar(30)
+	, RepoOwner varchar(30)
+	, StatusID varchar(30)
 );
 
 CREATE TABLE tClient (
 	ID varchar(10) NOT NULL PRIMARY KEY
 	, Name varchar(100)
+	, StatusID varchar(30)
 	, AddrLine1 varchar(255)
 	, AddrLine2 varchar(255)
 	, City varchar (100)
@@ -24,6 +28,8 @@ CREATE TABLE tProject (
 	ID varchar(30) NOT NULL
 	, Name varchar(100)
 	, ClientID varchar(30) NOT NULL
+	, ProductID varchar(30)
+	, StatusID varchar(30)
 	, PRIMARY KEY (ID, ClientID)
 );
 
@@ -35,23 +41,25 @@ CREATE TABLE tTask (
 	, EstHours decimal (5,2)
 	, ProductID varchar(30)
 	, AgentID varchar(10)
+	, StatusID varchar(30)
 	, PRIMARY KEY (ID, ProjectID)
 );
 
 CREATE TABLE tAgent (
 	ID varchar(10) NOT NULL PRIMARY KEY 
-	, Name varchar(10) NOT NULL
+	, Name varchar(30) NOT NULL
 	, AddrLine1 varchar(255)
 	, AddrLine2 varchar(255)
 	, City varchar (100)
 	, Country varchar (30)
 	, State varchar (30)
 	, Postal varchar(12)
-    , Active tinyint DEFAULT 1
+    , StatusID varchar(30)
 );
+
 CREATE TABLE tEntry (
 	PK int PRIMARY KEY AUTO_INCREMENT
-	, AgentID varchar(10) NOT NULL
+	, AgentID varchar(30) NOT NULL
 	, OwnerID varchar(30) NOT NULL
 	, EntityID varchar(30) NOT NULL
 	, ActualHours decimal (5, 2)
@@ -59,6 +67,7 @@ CREATE TABLE tEntry (
 	, Notes varchar(1000)
 	, EntryDate datetime NOT NULL
 	, InvoiceID varchar(30)
+	, PeriodID varchar(30)
 );
 
 CREATE TABLE tEntityType (
@@ -67,7 +76,9 @@ CREATE TABLE tEntityType (
 );
 
 CREATE TABLE tPeriod (
-	StartDate  datetime NOT NULL
+	ID varchar(30) PRIMARY KEY
+	, Name varchar(100)
+	, StartDate  datetime NOT NULL
 	, EndDate datetime NOT NULL
 	, StatusID varchar(30)
 );
@@ -75,8 +86,7 @@ CREATE TABLE tPeriod (
 CREATE TABLE tStatus (
 	ID varchar (30) PRIMARY KEY
 	, Name varchar (100)
-	, OwnerID varchar(30)
-	, EntityID varchar(30)
+	, EntityID varchar(30) NOT NULL
 );
 
 CREATE TABLE tInvoice (
@@ -112,6 +122,10 @@ INSERT INTO tEntityLink (EntityID, ToEntityID, Parms, Name) SELECT  'tProject', 
 
 INSERT INTO tEntityLink (EntityID, ToEntityID, Parms, Name) SELECT  'tProject', 'entry', '{"ID":"OwnerID","Project":"EntityID"}', 'Entry';
 
+INSERT INTO tEntityLink (EntityID, ToEntityID, Parms, Name) SELECT  'tProject', 'product', '{"ProductID":"ID"}', 'Product';
+
+INSERT INTO tEntityLink (EntityID, ToEntityID, Parms, Name) SELECT  'tProduct', 'project', '{"ID":"ProductID"}', 'Project(s)';
+
 CREATE VIEW vProject 
 AS 
 SELECT p.Name, p.ID, c.Name as ClientName, c.ID as ClientID
@@ -123,13 +137,21 @@ AS
 SELECT c.ID, c.Name, c.AddrLine1, c.AddrLine2, c.City, c.Postal, c.Country
 	FROM tClient c;
 
-	
 CREATE VIEW vEntity
 AS
 SELECT ID, 'Project' AS Type FROM tProject
 UNION
 SELECT ID, 'Task' AS Type FROM tTask;
-    
+
+CREATE VIEW vTask
+AS /* TODO fnDivZero */
+SELECT t.ID, t.Name, SUM(e.ActualHours) AS ActualHours, t.EstHours, e.ActualHours / t.EstHours * 100 AS ProgressPercent
+	, p.ID AS ProjectID, p.Name AS ProjectName
+    FROM tTask t
+    JOIN tProject p ON p.ID = t.ProjectID
+	LEFT OUTER JOIN tEntry e ON e.OwnerID = t.ID AND e.EntityID = 'Task'
+GROUP BY t.ID, t.Name, p.ID, p.Name
+
 delimiter //
 CREATE TRIGGER tr_tAgent_DEL
 BEFORE DELETE
