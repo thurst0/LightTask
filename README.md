@@ -6,13 +6,11 @@ The goal of this project was to create a lightweight project/task managment appl
 
 The other goal of this project was to be able to bill and invoice clients using the entered data.
 
-This is a AngularJS web application, with a MySQL database, and NodeJS web hosting and express web services.  I generally gravitates towards Microsoft SQL, however I was dissapointed to learn that 'mssql' Node module doesn't support SQL 2016 at this time.  The Microsoft authored and supported module 'node-sqlserver' does, however it has some prerequisites I wanted to avoid.
-
-This project is WIP
+This is a AngularJS web application, with a MySQL database, and NodeJS web hosting and express web services.  I generally gravitate towards Microsoft SQL, however I was dissapointed to learn that 'mssql' Node module doesn't support SQL 2016 at this time.  The Microsoft authored and supported module 'node-sqlserver' does, however it has some prerequisites I wanted to avoid.
 
 ## Default Schemas
 
-I used a custom version of this application https://github.com/thurst0/Angular-Schema-Editor to write the schema meta data
+I used a custom version of this application https://github.com/thurst0/Angular-Schema-Editor to write the schema meta data.  It is actually built into the product.
 
 Agents.  
 Clients.  
@@ -21,6 +19,12 @@ Tasks - Project has many tasks.
 Entries - Can be against a project or task.  
 Git Commits - This is a very basic git integration.  Allows use to specify an Owner (in this case needs to be added as an agent), and a repo name.  Will pull a list of all comits for that repo with some details.  Ordered with most recent first.  By selecting one, it will bring you to the entry screen and default the notes for the entry to be the commit comment.  Note that web server that hosts this web application will need to be authenticated with git.
 Login - Choose an agent to login as.
+Products - Project can have a product. Project to product is many to 1.
+Periods - A entry can have a period.  This can be a milestone, or a release, etc.  Can help to filter down release notes to the entries you want to see.  Future will allow assigning different entities such as projects or tasks to a period.
+Statuses - Associated with an entity.  This allows you to setup different statuses for agents, tasks, projects, etc.
+UI - These are screens that are shown on the index.  From here you can change some JSON options particular to that UI, and add or remove screens
+Schema - UI to Schema is 1:1 currently.  You can modify a screens schema, and change how it's inputs and grid are rendered.
+Entity Links - Shortcuts.  This defines the contextual links from one screen to another.
 
 ## File Structure
 
