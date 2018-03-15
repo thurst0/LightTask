@@ -31,7 +31,34 @@ ltapp.config(function($routeProvider, $logProvider){
 });
 
 // base controller for extends
-ltapp.controller('BaseController', function BaseController($scope, $rootScope, $http, $log, $location, $uibModal) {
+ltapp.controller('BaseController', function BaseController($scope, $rootScope, $http, $log, $location, $uibModal, ltService) {
+	$rootScope.loadUIs = function(){
+		ltService.getData('/api/tui').then(function(data){
+			if(data.data)data=data.data
+			console.log(data)
+			if(data && data.message && data.success == false ){
+				$rootScope.addAlert(data.message)
+			}else{
+				$rootScope.uis = data
+			}
+		})
+	}
+	$scope.editSchema = function(ui){
+		var modalInstance = $uibModal.open({
+			size: 'lg',
+			templateUrl: 'templates/schema.html',
+			controller: 'SchemaController',
+			resolve: {
+				ui: function() {
+					return ui;
+				}
+			}
+		});
+		return modalInstance.result.then(function(data) {
+		}, function() { // cancel
+
+		});
+	}
 	$rootScope.alerts = [];
 	$rootScope.addAlert = function(msg, type, timeout) {
 		if (!type) {
@@ -52,18 +79,19 @@ ltapp.controller('BaseController', function BaseController($scope, $rootScope, $
 	* @param {string} schema - schema to use from $scope.schema object
 	* @param {array} values - value ovrd
 	*/
-	$scope.openForm = function(schema, values) {
+	$scope.openForm = function(ui, values) {
 		var modalInstance = $uibModal.open({
 			size: 'lg',
 			templateUrl: 'templates/form.html',
 			controller: 'FormController',
 			resolve: {
-				schema: function() {
-				  return $rootScope.schema[schema];
+				ui: function() {
+					return ui;
+				 // return $rootScope.schema[schema];
 				},
-				options: function(){
-				  return $rootScope.options[schema]
-				},
+				//options: function(){
+				//  return $rootScope.options[schema]
+				//},
 				values: function(){
 				  return values
 				}
@@ -102,9 +130,25 @@ ltapp.controller('BaseController', function BaseController($scope, $rootScope, $
 			
 		});
 	}
-	// define schema and related options for implementation
+	/*
+	$scope.getValueFromArray = function(arr, field, get_value){
+		var value
+		for (var input in arr) {
+			row = arr[input]
+			value = row[field]
+			console.log(col)
+			console.log(value)
+			console.log(field)
+			if(value == )
+				col.value = $rootScope.user
+		}
+	}
+	*/
+	
+	// define schema and related options for implementation. now handled in DB
 	$rootScope.schema = []
-	$rootScope.schema.entry = '[{"name":"Agent ID","field":"AgentID","read_only":1,"required":1,"type":"text","lookup":{"object":"tagent","cols":"ID,Name"}},{"name":"ID","field":"OwnerID","read_only":1,"required":1,"type":"text","lookup":{"object":"ventity","cols":"ID,Type","sets":"OwnerID,EntityID"}},{"name":"Entity ID","field":"EntityID","read_only":1,"required":1,"type":"text","lookup":{"object":"tentitytype","cols":"Name"}},{"name":"Actual Hours","field":"ActualHours","type":"number"},{"name":"Billable Hours","field":"BillableHours","type":"number"},{"name":"Notes","field":"Notes","type":"longtext"},{"name":"Invoice ID","field":"InvoiceID","type":"text"},{"name":"Entry Date","field":"EntryDate","type":"date", "required":1}]'
+	/*
+	$rootScope.schema.entry = '[{"name":"Agent ID","field":"AgentID","read_only":1,"required":1,"type":"text","lookup":{"object":"tagent","cols":"ID,Name"}},{"name":"ID","field":"OwnerID","read_only":1,"required":1,"type":"text","lookup":{"object":"ventity","cols":"ID,Type","sets":"OwnerID,EntityID"}},{"name":"Entity ID","field":"EntityID","read_only":1,"required":1,"type":"text","lookup":{"object":"tentitytype","cols":"Name"}},{"name":"Actual Hours","field":"ActualHours","type":"number"},{"name":"Billable Hours","field":"BillableHours","type":"number"},{"name":"Notes","field":"Notes","type":"longtext"},{"name":"Invoice ID","field":"InvoiceID","type":"text"},{"name":"Entry Date","field":"EntryDate","type":"date", "required":1},{"name":"Period","field":"PeriodID","read_only":0,"required":0,"type":"text","lookup":{"object":"tPeriod","cols":"ID"}}]'
 	$rootScope.schema.agent = '[{"name":"ID","field":"ID","caption":"ID","required":1},{"name":"Name","field":"Name","caption":"Name","required":1},{"name":"Address Line 1","field":"AddrLine1","caption":"Address Line 1"},{"name":"Address Line 2","field":"AddrLine2","caption":"Address Line 2"},{"name":"City","field":"City","caption":"City"},{"name":"State","field":"State","caption":"State"},{"name":"Country","field":"Country","caption":"Country"},{"name":"Postal","field":"Postal","caption":"Postal"}]'
 	$rootScope.schema.client = '[{"name":"ID","field":"ID","caption":"ID","required":1},{"name":"Name","field":"Name","caption":"Name"},{"name":"Address Line 1","field":"AddrLine1","caption":"Address Line 1"},{"name":"Address Line 2","field":"AddrLine2","caption":"Address Line 2"},{"name":"City","field":"City","caption":"City"},{"name":"State","field":"State","caption":"State"},{"name":"Country","field":"Country","caption":"Country"},{"name":"Postal","field":"Postal","caption":"Postal"}]'
 	$rootScope.schema.project = '[{"name":"ID","field":"ID","caption":"ID","required":1},{"name":"Name","field":"Name","caption":"Name"},{"name":"Client ID","field":"ClientID","caption":"Client ID","required":1, "lookup":{"object":"tclient","cols":"ID,Name"}},{"name":"Product ID","field":"ProductID","caption":"Product ID","required":0, "lookup":{"object":"tproduct","cols":"ID,Name"}}]'
@@ -113,11 +157,12 @@ ltapp.controller('BaseController', function BaseController($scope, $rootScope, $
 	$rootScope.schema.status = '[{"name":"ID","field":"ID","caption":"ID","required":1},{"name":"Name","field":"Name","caption":"Name"},{"name":"Entity ID","field":"EntityID","read_only":1,"required":1,"type":"text","lookup":{"object":"tentitytype","cols":"Name"}}]'
 	$rootScope.schema.period = '[{"name":"ID","field":"ID","caption":"ID","required":1},{"name":"Name","field":"Name","caption":"Name"},{"name":"Start Date","field":"StartDate","type":"date"},{"name":"End Date","field":"EndDate","type":"date"}]'
 	$rootScope.schema.login = '[{"name":"Agent","field":"User","type":"cookie","lookup":{"object":"tagent","cols":"ID,Name"}}]'
-	$rootScope.schema.gitcomments = '[{"name":"Agent","field":"user","type":"cookie","required":1,"lookup":{"object":"tagent","cols":"ID,Name"}},{"name":"Repo","field":"repo","required":1}]'
-
+	$rootScope.schema.gitcommit = '[{"name":"Agent","field":"user","type":"cookie","required":1,"lookup":{"object":"tagent","cols":"ID,Name"}},{"name":"Repo","field":"repo","required":1}]'
+	*/
 	$rootScope.options = []
+	/*
 	$rootScope.options.agent = {"object":"tagent","pk":"ID","title":"Agents"}
-	$rootScope.options.entry = {"object":"tentry","title":"Entries","pk":"PK","controller":"EntryController"}
+	$rootScope.options.entry = {"object":"tentry","title":"Entries","pk":"PK","controller":"EntryController","template":"templates/entry.html"}
 	$rootScope.options.client = {"object":"tclient","pk":"ID","title":"Clients"}
 	$rootScope.options.project = {"object":"tproject","pk":"ID","title":"Projects"}
 	$rootScope.options.product = {"object":"tproduct","pk":"ID","title":"Products"}
@@ -125,5 +170,6 @@ ltapp.controller('BaseController', function BaseController($scope, $rootScope, $
 	$rootScope.options.status = {"object":"tStatus","pk":"ID","title":"Statuses"}
 	$rootScope.options.task = {"object":"ttask","pk":"ID","title":"Tasks"}
 	$rootScope.options.login = {"object":"","title":"Login","controller":"LoginController"}
-	$rootScope.options.gitcomments = {"object":"","title":"Git Comments","controller":"GitCommentController"}
+	$rootScope.options.gitcommit = {"object":"","title":"Git Comments","controller":"GitCommentController"}
+	*/
 })

@@ -1,7 +1,6 @@
 'use strict';
-ltapp.controller('FormController', function FormController($scope, $rootScope, $http, $log, $location, $templateCache, $controller, $uibModalInstance, ltService, schema, options, values) {
+ltapp.controller('FormController', function FormController($scope, $rootScope, $http, $log, $location, $templateCache, $controller, $uibModalInstance, ltService, ui, values) {
 	angular.extend(this, $controller('BaseController', {$scope: $scope}));
-	
 	//----//
 	//-- VARIABLES --//
 	$scope.columns = [{ field: 'icons', name: 'I', cellTemplate: 'components/buttons.html', width:72 }]; // default columns.  we will add to this from schema
@@ -15,38 +14,69 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 	
 	// build screen from schema
 	$scope.init = function() {
-		$scope.schema = JSON.parse(schema);
-		$scope.options = options
-		$scope.title = options.title
-		if($scope.options.controller)
+		var parms = {ID:ui}
+		var url = '/api/tui/' + JSON.stringify(parms)
+		ltService.getData(url).then(function(data){
+			if(data.data)data=data.data
+			if(data && data.message && data.success == false ){
+				$rootScope.addAlert(data.message)
+			}else{
+				if(!data[0]){
+					$rootScope.addAlert("UI not found.")
+					return;
+				}
+				var uirow = data[0]
+				$scope.initUI(uirow)
+				parms = {UIID:ui}
+				url = '/api/tschema/' + JSON.stringify(parms)
+				ltService.getData(url).then(function(data){
+					if(data.data)data=data.data
+					if(data && data.message && data.success == false ){
+						$rootScope.addAlert(data.message)
+					}else{
+						if(!data[0]){
+							$rootScope.addAlert("Schema not found.")
+							return;
+						}
+						var schemarow = data[0]
+						$scope.schema = JSON.parse(schemarow.SchemaJSON)
+						var i = 0, len = $scope.schema.length, field = ""
+						for (var row in $scope.schema) { // loop schema to add form controls and grid cols
+							field = $scope.schema[row].field
+							if(values && values[field]){ // value ovrds
+							$scope.schema[row].value = values[field]
+							}
+							if($scope.schema[row].type == 'date'){ // if date type default to today's date // TODO format
+								$scope.schema[row].value = new Date()
+								$scope.schema[row].value.setHours(0,0,0,0)
+							}
+							$scope.form_data.push($scope.schema[row])
+							$scope.columns.push({ // grid cols
+								field: $scope.schema[row].field, enableSorting: true, displayName: $scope.schema[row].caption, enableCellEdit: !$scope.schema[row].read_only
+								, visible: $scope.schema[row].visible
+							});
+							i += 1
+							if (i == len) { // finally init grid and pull in all data
+								$scope.loadData(); // TODO only load top 100
+								$scope.setDefaults(); // set defaults
+							}
+						}
+					}
+				})
+			}
+		})
+	}
+	
+	$scope.initUI = function(uirow){
+		$scope.options = JSON.parse(uirow.OptionsJSON)
+		$scope.title = $scope.options.title
+		if($scope.options.controller){
 			angular.extend(this, $controller($scope.options.controller, {$scope: $scope}));
+		}
 		if(!$scope.options.object){
 			$scope.action = $scope.options.title // in the case we have no object, we want to specify action button as title
 		}
-		var i = 0, len = $scope.schema.length, field = ""
-		for (var row in $scope.schema) { // loop schema to add form controls and grid cols
-			field = $scope.schema[row].field
-			if(values && values[field]){ // value ovrds
-			  $scope.schema[row].value = values[field]
-			}
-			if($scope.schema[row].type == 'date'){ // if date type default to today's date // TODO format
-				$scope.schema[row].value = new Date()
-				$scope.schema[row].value.setHours(0,0,0,0)
-			}
-			$scope.form_data.push($scope.schema[row])
-			$scope.columns.push({ // grid cols
-				field: $scope.schema[row].field, enableSorting: true, displayName: $scope.schema[row].caption, enableCellEdit: !$scope.schema[row].read_only
-				, visible: $scope.schema[row].visible
-			});
-			i += 1
-			if (i == len) { // finally init grid and pull in all data
-				$scope.initGrid()
-				$scope.loadData(); // TODO only load top 100
-				$scope.setDefaults(); // set defaults
-			}
-		}
 	}
-	
 	// load data 
 	$scope.loadData = function() {
 		if(!$scope.options.object){
@@ -58,7 +88,6 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 			url += ('/' + JSON.stringify(parms))
 		ltService.getData(url).then(function(data){
 			if(data.data)data=data.data
-			console.log(data)
 			if(data && data.message && data.success == false ){
 				$rootScope.addAlert(data.message)
 			}else{
@@ -77,6 +106,15 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 		  enableSorting: true,
 		  columnDefs: $scope.columns,
 		  enableGridMenu: true,
+		  gridMenuCustomItems: [
+			{
+			  title: 'Edit Schema',
+			  action: function ($event) {
+				  $scope.editSchema(ui);
+			  },
+			  order: 1
+			},  
+		  ],
 		  enableRowSelection: false,
 		  multiSelect: false,
 		  enableSelectAll: false,
@@ -238,6 +276,7 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 		})
 		
 	}
-	
-	$scope.init(); // initialize!
+	// initialize!
+	$scope.initGrid()
+	$scope.init();
 });

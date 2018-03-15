@@ -90,7 +90,7 @@ CREATE TABLE tStatus (
 );
 
 CREATE TABLE tInvoice (
-	ID varchar(10) NOT NULL PRIMARY KEY
+	ID varchar(10) PRIMARY KEY
 );
 
 CREATE TABLE tEntityLink (
@@ -99,6 +99,56 @@ CREATE TABLE tEntityLink (
 	, Parms varchar(1000) NOT NULL
 	, Name varchar(100)
 );
+
+CREATE TABLE tUI (
+	ID varchar(30) PRIMARY KEY
+	, Name varchar(100)
+	, OptionsJSON varchar(5000)
+	, Visible int DEFAULT 1
+	, Seq int DEFAULT 0
+);
+
+CREATE TABLE tSchema (
+	UIID varchar(30) PRIMARY KEY
+	, SchemaJSON varchar(5000)
+);
+
+-- UIs, Schema
+
+INSERT INTO tUI (ID, Name, OptionsJSON, Seq) SELECT 'agent', 'Agents', '{"object":"tagent","pk":"ID","title":"Agents"}', 10;
+INSERT INTO tSchema (UIID, SchemaJSON) SELECT 'agent', '[{"name":"ID","field":"ID","caption":"ID","required":1},{"name":"Name","field":"Name","caption":"Name","required":1},{"name":"Address Line 1","field":"AddrLine1","caption":"Address Line 1"},{"name":"Address Line 2","field":"AddrLine2","caption":"Address Line 2"},{"name":"City","field":"City","caption":"City"},{"name":"State","field":"State","caption":"State"},{"name":"Country","field":"Country","caption":"Country"},{"name":"Postal","field":"Postal","caption":"Postal"}]';
+
+INSERT INTO tUI (ID, Name, OptionsJSON, Seq) SELECT 'client', 'Clients', '{"object":"tclient","pk":"ID","title":"Clients"}', 20;
+INSERT INTO tSchema (UIID, SchemaJSON) SELECT 'client', '[{"name":"ID","field":"ID","caption":"ID","required":1},{"name":"Name","field":"Name","caption":"Name"},{"name":"Address Line 1","field":"AddrLine1","caption":"Address Line 1"},{"name":"Address Line 2","field":"AddrLine2","caption":"Address Line 2"},{"name":"City","field":"City","caption":"City"},{"name":"State","field":"State","caption":"State"},{"name":"Country","field":"Country","caption":"Country"},{"name":"Postal","field":"Postal","caption":"Postal"}]';
+
+INSERT INTO tUI (ID, Name, OptionsJSON, Seq) SELECT 'entry', 'Entries', '{"object":"tentry","title":"Entries","pk":"PK","controller":"EntryController","template":"templates/entry.html"}', 80;
+INSERT INTO tSchema (UIID, SchemaJSON) SELECT 'entry', '[{"name":"Agent ID","field":"AgentID","read_only":1,"required":1,"type":"text","lookup":{"object":"tagent","cols":"ID,Name"}},{"name":"ID","field":"OwnerID","read_only":1,"required":1,"type":"text","lookup":{"object":"ventity","cols":"ID,Type","sets":"OwnerID,EntityID"}},{"name":"Entity ID","field":"EntityID","read_only":1,"required":1,"type":"text","lookup":{"object":"tentitytype","cols":"Name"}},{"name":"Actual Hours","field":"ActualHours","type":"number"},{"name":"Billable Hours","field":"BillableHours","type":"number"},{"name":"Notes","field":"Notes","type":"longtext"},{"name":"Invoice ID","field":"InvoiceID","type":"text"},{"name":"Entry Date","field":"EntryDate","type":"date", "required":1},{"name":"Period","field":"PeriodID","read_only":0,"required":0,"type":"text","lookup":{"object":"tPeriod","cols":"ID"}}]';
+	
+INSERT INTO tUI (ID, Name, OptionsJSON, Seq) SELECT 'project', 'Projects', '{"object":"tproject","pk":"ID","title":"Projects"}', 60;
+INSERT INTO tSchema (UIID, SchemaJSON) SELECT 'project', '[{"name":"ID","field":"ID","caption":"ID","required":1},{"name":"Name","field":"Name","caption":"Name"},{"name":"Client ID","field":"ClientID","caption":"Client ID","required":1, "lookup":{"object":"tclient","cols":"ID,Name"}},{"name":"Product ID","field":"ProductID","caption":"Product ID","required":0, "lookup":{"object":"tproduct","cols":"ID,Name"}}]';
+	
+INSERT INTO tUI (ID, Name, OptionsJSON, Seq) SELECT 'product', 'Products', '{"object":"tproduct","pk":"ID","title":"Products"}', 30;
+INSERT INTO tSchema (UIID, SchemaJSON) SELECT 'product', '[{"name":"ID","field":"ID","caption":"ID","required":1},{"name":"Name","field":"Name","caption":"Name"},{"name":"Repo","field":"Repo","caption":"Repo","required":0},{"name":"Repo Owner","field":"RepoOwner","caption":"Repo Owner"}]'
+	
+INSERT INTO tUI (ID, Name, OptionsJSON, Seq) SELECT 'period', 'Periods', '{"object":"tperiod","pk":"ID","title":"Periods"}', 40;
+INSERT INTO tSchema (UIID, SchemaJSON) SELECT 'period', '[{"name":"ID","field":"ID","caption":"ID","required":1},{"name":"Name","field":"Name","caption":"Name"},{"name":"Start Date","field":"StartDate","type":"date"},{"name":"End Date","field":"EndDate","type":"date"}]';
+	
+INSERT INTO tUI (ID, Name, OptionsJSON, Seq) SELECT 'status', 'Statuses', '{"object":"tStatus","pk":"ID","title":"Statuses"}', 50;
+INSERT INTO tSchema (UIID, SchemaJSON) SELECT 'status', '[{"name":"ID","field":"ID","caption":"ID","required":1},{"name":"Name","field":"Name","caption":"Name"},{"name":"Entity ID","field":"EntityID","read_only":1,"required":1,"type":"text","lookup":{"object":"tentitytype","cols":"Name"}}]';
+	
+INSERT INTO tUI (ID, Name, OptionsJSON, Seq) SELECT 'task', 'Tasks', '{"object":"ttask","pk":"ID","title":"Tasks"}', 70;
+INSERT INTO tSchema (UIID, SchemaJSON) SELECT 'task', '[{"name":"ID","field":"ID","required":1},{"name":"Name","field":"Name"},{"name":"Description","field":"Description","type":"longtext"},{"name":"Project ID","field":"ProjectID","caption":"Project ID","lookup":{"object":"tproject","cols":"ID,Name"}},{"name":"Agent","field":"AgentID","caption":"Agent ID","lookup":{"object":"tagent","cols":"ID,Name"}},{"name":"Est Hours","field":"EstHours","required":0,"type":"number"},{"name":"Status ID","field":"StatusID","caption":"Status","lookup":{"object":"tstatus","cols":"ID,Name"}}]';
+	
+INSERT INTO tUI (ID, Name, OptionsJSON, Seq) SELECT 'gitcommit', 'Git Commits', '{"object":"","title":"Git Commits","controller":"GitCommentController"}', 90;
+INSERT INTO tSchema (UIID, SchemaJSON) SELECT 'gitcommit', '[{"name":"Agent","field":"user","type":"cookie","required":1,"lookup":{"object":"tagent","cols":"ID,Name"}},{"name":"Repo","field":"repo","required":1}]';
+
+INSERT INTO tUI (ID, Name, OptionsJSON, Seq) SELECT 'ui', 'Screens', '{"object":"tui","pk":"ID","title":"Screens"}', 100;
+INSERT INTO tSchema (UIID, SchemaJSON) SELECT 'ui', '[{"name":"ID","field":"ID","caption":"ID","required":1},{"name":"Title","field":"Name","caption":"Title"},{"name":"Options JSON","field":"OptionsJSON","caption":"Options JSON","type":"longtext"}]';
+
+INSERT INTO tUI (ID, Name, OptionsJSON, Seq) SELECT 'schema', 'Schemas', '{"object":"tschema","pk":"UIID","title":"Schemas"}', 110;
+INSERT INTO tSchema (UIID, SchemaJSON) SELECT 'schema', '[{"name":"Screen ID","field":"UIID","caption":"Screen ID","required":1},{"name":"Schema JSON","field":"SchemaJSON","caption":"Schema JSON","type":"longtext"}]';
+
+-- entity types
 
 INSERT INTO tEntityType (ID, Name) SELECT  'tTask', 'Task';
 
@@ -126,6 +176,12 @@ INSERT INTO tEntityLink (EntityID, ToEntityID, Parms, Name) SELECT  'tProject', 
 
 INSERT INTO tEntityLink (EntityID, ToEntityID, Parms, Name) SELECT  'tProduct', 'project', '{"ID":"ProductID"}', 'Project(s)';
 
+INSERT INTO tEntityLink (EntityID, ToEntityID, Parms, Name) SELECT  'tPeriod', 'entry', '{"ID":"PeriodID"}', 'Entrie(s)';
+
+INSERT INTO tEntityLink (EntityID, ToEntityID, Parms, Name) SELECT  'tUI', 'schema', '{"ID":"UIID"}', 'Schema';
+
+INSERT INTO tEntityLink (EntityID, ToEntityID, Parms, Name) SELECT  'tSchema', 'ui', '{"UIID":"ID"}', 'Screen(s)';
+
 CREATE VIEW vProject 
 AS 
 SELECT p.Name, p.ID, c.Name as ClientName, c.ID as ClientID
@@ -144,7 +200,7 @@ UNION
 SELECT ID, 'Task' AS Type FROM tTask;
 
 CREATE VIEW vTask
-AS /* TODO fnDivZero */
+AS 
 SELECT t.ID, t.Name, SUM(e.ActualHours) AS ActualHours, t.EstHours, e.ActualHours / t.EstHours * 100 AS ProgressPercent
 	, p.ID AS ProjectID, p.Name AS ProjectName
     FROM tTask t

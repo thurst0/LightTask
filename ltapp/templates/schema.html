@@ -1,0 +1,29 @@
+<!-- <h1>Schema Editor</h1> -->
+	<!-- ALERTS -->
+	<div uib-alert ng-repeat="alert in alerts" ng-class="'alert-' + (alert.type || 'warning')" close="closeAlert($index)" dismiss-on-timeout="4000">{{alert.msg}}</div>
+	<!-- GRID BUTTONS -->
+	<div class="row margin-bottom margin-top container-fluid">
+        <b class="pull-left"><h2>Schema Editor</h2></b>
+        <button id="btnSeq" class="btn pull-right" type="submit" ng-click="resequence()" ng-disabled="false">Sequence</button>
+        <button id="btnAddRow" class="btn btn-success pull-right" type="submit" ng-click="addRow()" ng-disabled="false">Add Row</button>
+        <button id="btnDeleteRows" class="btn btn-danger pull-right" type="submit" ng-click="deleteRows()" ng-disabled="false">Delete Row(s)</button>
+      </div>
+      <!-- GRID -->
+      <div id="grid1" class="fill grid" ui-grid="gridOptions" data-ng-if="!refresh" ui-grid-cellNav ui-grid-selection ui-grid-edit ui-grid-save-state ui-grid-resize-columns ui-grid-move-columns>
+      </div>
+      <!-- UPDATE / SAVE JSON -->
+      <button id="btnUpdateJSON" class="btn btn-block" type="submit" ng-click="updateJSON()" ng-disabled="false">Update JSON</button>
+      <button id="btnSaveJSON" class="btn btn-success btn-block margin-top margin-bottom lt-btn-primary" type="submit" ng-click="saveJSON()" ng-disabled="frmDemo.$invalid || !input.valid">Save</button>
+      <!-- JSON EDITOR -->
+      <div class="form-group margin-top margin-bottom">
+        <label for="input_json">JSON Editor</label>
+        <textarea id="input_json" class="form-control" ng-model="input.json" rows="4" placeholder="JSON" ng-blur="validateJSON()" ng-required="true" ng-class="{'border-warning': !input.valid}"></textarea>
+      </div>
+      <!-- VALID : This is just a check to make the form invalid.. Their are cleaner ways to do this in new angularjs -->
+      <div class="form-group" ng-show="false">
+        <label for="input_valid">Valid Check</label>
+        <textarea id="input_valid" class="form-control" ng-model="input.valid" ng-required="true"></textarea>
+      </div>
+       <!-- UPDATE GRID -->
+       <button id="btnUpdateGrid" class="btn btn-block" type="submit" ng-click="updateGrid()" ng-disabled="false">Update Grid</button>
+</div>
