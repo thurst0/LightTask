@@ -8,6 +8,7 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 	$scope.options = []; // options relating to form implementation
 	$scope.values = values // default specified values for ovrd
 	$scope.action = "Create"
+	$scope.keepOptions = 0;
 
 	//----//
 	//-- FUNCTIONS --//
@@ -131,8 +132,10 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 						if(data.data)data=data.data
 						if(data && data.message && data.success == false ){
 							$rootScope.addAlert(data.message)
+							var field = colDef.field
+							rowEntity[field] = oldValue // Save did not succeed, set back to old value.
 						}else{
-							$scope.loadData()
+							//$scope.loadData()
 						}
 					})
 				}
@@ -162,7 +165,8 @@ ltapp.controller('FormController', function FormController($scope, $rootScope, $
 					if(data && data.message && data.success == false ){
 						$rootScope.addAlert(data.message)
 					}else{
-						$scope.clearForm() // TODO we need a radio defaulted to off whether to keep settings or defaults.
+						if(!$scope.keepOptions)
+							$scope.clearForm() 
 						$scope.loadData()
 					}
 				})

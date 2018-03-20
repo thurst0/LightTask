@@ -148,6 +148,9 @@ INSERT INTO tSchema (UIID, SchemaJSON) SELECT 'ui', '[{"name":"ID","field":"ID",
 INSERT INTO tUI (ID, Name, OptionsJSON, Seq) SELECT 'schema', 'Schemas', '{"object":"tschema","pk":"UIID","title":"Schemas"}', 110;
 INSERT INTO tSchema (UIID, SchemaJSON) SELECT 'schema', '[{"name":"Screen ID","field":"UIID","caption":"Screen ID","required":1},{"name":"Schema JSON","field":"SchemaJSON","caption":"Schema JSON","type":"longtext"}]';
 
+INSERT INTO tUI (ID, Name, OptionsJSON, Seq) SELECT 'entitylink', 'Entity Links', '{"object":"tentitylink","pk":"EntityID,ToEntityID","title":"Shortcuts"}', 120;
+INSERT INTO tSchema (UIID, SchemaJSON) SELECT 'entitylink', '[{"name":"Object","field":"FromEntityID","caption":"Object","required":1},{"name":"UI","field":"ToEntityID","caption":"Screen","type":"text"},{"name":"Parms","field":"Parms","caption":"Parms","type":"text","required":1},{"name":"Name","field":"Name","caption":"Title","type":"text"}]';
+
 -- entity types
 
 INSERT INTO tEntityType (ID, Name) SELECT  'tTask', 'Task';
@@ -261,5 +264,158 @@ BEGIN
     SET msg = 'Client has projects';
 	IF (SELECT 1=1 FROM tProject e WHERE e.ClientID = OLD.ID) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+	END IF;
+END;
+-- insert and update triggers
+
+delimiter //
+CREATE TRIGGER tr_tProject_UPD
+BEFORE UPDATE
+ON tProject
+FOR EACH ROW
+BEGIN
+	DECLARE msg varchar(128);
+    SET msg = 'Client does not exist';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tClient e WHERE e.ID = NEW.ClientID) AND (NEW.ClientID IS NOT NULL) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+    SET msg = 'Product does not exist';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tProduct e WHERE e.ID = NEW.ProductID) AND (NEW.ProductID IS NOT NULL) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+END;
+
+delimiter //
+CREATE TRIGGER tr_tProject_INS
+BEFORE INSERT
+ON tProject
+FOR EACH ROW
+BEGIN
+	DECLARE msg varchar(128);
+    SET msg = 'Client does not exist';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tClient e WHERE e.ID = NEW.ClientID) AND (NEW.ClientID IS NOT NULL) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+    SET msg = 'Product does not exist';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tProduct e WHERE e.ID = NEW.ProductID) AND (NEW.ProductID IS NOT NULL) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+END;
+
+delimiter //
+CREATE TRIGGER tr_tStatus_UPD
+BEFORE UPDATE
+ON tStatus
+FOR EACH ROW
+BEGIN
+	DECLARE msg varchar(128);
+    SET msg = 'Entity does not exist';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tEntityType e WHERE e.ID = NEW.EntityID) AND (NEW.EntityID IS NOT NULL) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+END;
+
+delimiter //
+CREATE TRIGGER tr_tStatus_UPD
+BEFORE INSERT
+ON tStatus
+FOR EACH ROW
+BEGIN
+	DECLARE msg varchar(128);
+    SET msg = 'Entity does not exist';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tEntityType e WHERE e.Name = NEW.EntityID) AND (NEW.EntityID IS NOT NULL) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+END;
+
+delimiter //
+CREATE TRIGGER tr_tTask_UPD
+BEFORE UPDATE
+ON tTask
+FOR EACH ROW
+BEGIN
+	DECLARE msg varchar(128);
+    SET msg = 'Project does not exist';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tProject e WHERE e.ID = NEW.ProjectID) AND (NEW.ProjectID IS NOT NULL) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+    SET msg = 'Agent does not exist';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tAgent e WHERE e.ID = NEW.AgentID) AND (NEW.AgentID IS NOT NULL) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+    SET msg = 'Status invalid';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tStatus e WHERE e.ID = NEW.StatusID AND e.EntityID = 'Task') AND (NEW.StatusID IS NOT NULL) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+END;
+
+delimiter //
+CREATE TRIGGER tr_tTask_INS
+BEFORE INSERT
+ON tTask
+FOR EACH ROW
+BEGIN
+	DECLARE msg varchar(128);
+    SET msg = 'Project does not exist';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tProject e WHERE e.ID = NEW.ProjectID) AND (NEW.ProjectID IS NOT NULL) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+    SET msg = 'Agent does not exist';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tAgent e WHERE e.ID = NEW.AgentID) AND (NEW.AgentID IS NOT NULL) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+    SET msg = 'Status invalid';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tStatus e WHERE e.ID = NEW.StatusID AND e.EntityID = 'Task') AND (NEW.StatusID IS NOT NULL) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+END;
+
+delimiter //
+CREATE TRIGGER tr_tEntry_INS
+BEFORE INSERT
+ON tEntry
+FOR EACH ROW
+BEGIN
+	DECLARE msg varchar(128);
+    SET msg = 'Project does not exist';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tProject e WHERE e.ID = NEW.OwnerID) AND (NEW.EntityID = 'Project') THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+    SET msg = 'Task does not exist';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tTask e WHERE e.ID = NEW.OwnerID) AND (NEW.EntityID = 'Task') THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+    SET msg = 'Entity invalid';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tEntityType e WHERE e.Name = NEW.EntityID) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+	SET msg = 'Agent does not exist';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tAgent e WHERE e.ID = NEW.AgentID) AND (NEW.AgentID IS NOT NULL) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+END;
+
+delimiter //
+CREATE TRIGGER tr_tEntry_UPD
+BEFORE UPDATE
+ON tEntry
+FOR EACH ROW
+BEGIN
+	DECLARE msg varchar(128);
+    SET msg = 'Project does not exist';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tProject e WHERE e.ID = NEW.OwnerID) AND (NEW.EntityID = 'Project') THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+    SET msg = 'Task does not exist';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tTask e WHERE e.ID = NEW.OwnerID) AND (NEW.EntityID = 'Task') THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+    SET msg = 'Entity invalid';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tEntityType e WHERE e.Name = NEW.EntityID) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
+	END IF;
+	SET msg = 'Agent does not exist';
+	IF NOT EXISTS (SELECT 1 = 1 FROM tAgent e WHERE e.ID = NEW.AgentID) AND (NEW.AgentID IS NOT NULL) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg; 
 	END IF;
 END;
